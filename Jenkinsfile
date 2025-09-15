@@ -13,6 +13,9 @@ pipeline {
         ACR_NAME        = "acr${APELLIDO}"
         CONTAINERAPP    = "aca-ms-${APELLIDO}-dev"
         ENVIRONMENT     = "aca-env-${APELLIDO}-dev"
+        ACR_LOGIN_SERVER = "acr${APELLIDO}.azurecr.io"
+        CONTAINERAPP_NAME = "aca-ms-${APELLIDO}-dev"   // 👈 agrega esto con el nombre de tu Container App
+
     }
 
     stages {
