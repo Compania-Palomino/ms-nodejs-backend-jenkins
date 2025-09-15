@@ -4,7 +4,7 @@ pipeline {
     }
 
     environment {
-        APELLIDO        = "apellido" // Reemplaza por tu apellido
+        APELLIDO        = "palomino" // Reemplaza por tu apellido
         SHORT_SHA       = "${env.GIT_COMMIT[0..6]}"
         IMAGE_NAME      = "acr${APELLIDO}.azurecr.io/my-nodejs-app"
         TAG             = "${SHORT_SHA}"
