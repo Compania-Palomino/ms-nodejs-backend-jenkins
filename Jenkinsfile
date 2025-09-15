@@ -44,7 +44,7 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
+        stage('[CI] Instalar dependencias') {
             steps {
                 sh '''
                   echo ">>> Instalando dependencias..."
@@ -53,7 +53,7 @@ pipeline {
             }
         }
 
-        stage('Run unit tests') {
+        stage('[CI] Ejecutar pruebas unitarias') {
             steps {
                 sh '''
                   echo ">>> Ejecutando pruebas unitarias..."
@@ -62,7 +62,7 @@ pipeline {
             }
         }
 
-        stage('Run integration tests') {
+        stage('[CI] Ejecutar pruebas de integración') {
             steps {
                 sh '''
                   echo ">>> Ejecutando pruebas de integración..."
@@ -71,7 +71,7 @@ pipeline {
             }
         }
 
-        stage('Azure Login') {
+        stage('[CI] Azure Login') {
             steps {
                 withCredentials([
                     string(credentialsId: 'azure-clientId',        variable: 'AZ_CLIENT_ID'),
@@ -92,7 +92,7 @@ pipeline {
             }
         }
 
-        stage('Docker Login') {
+        stage('[CI] Docker Login') {
             steps {
                 sh '''
                   echo ">>> Login en ACR..."
@@ -101,7 +101,7 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('[CI] Build and Push Docker Image') {
             steps {
                 sh '''
                   echo ">>> Construyendo y publicando imagen: $IMAGE"
@@ -111,7 +111,20 @@ pipeline {
             }
         }
 
-        stage('Deploy to Azure Container App') {
+        stage('[CD] Configurar ACR credentials para Container App') {
+            steps {
+                sh '''
+                    az containerapp registry set \
+                        --name $CONTAINERAPP_NAME \
+                        --resource-group $RESOURCE_GROUP \
+                        --server $ACR_LOGIN_SERVER \
+                        --username $(az acr credential show -n $ACR_NAME --query "username" -o tsv) \
+                        --password $(az acr credential show -n $ACR_NAME --query "passwords[0].value" -o tsv)
+                '''
+            }
+        }
+
+        stage('[CD] Deploy to Azure Container App') {
             steps {
                 sh '''
                   echo ">>> Desplegando en Azure Container App: $CONTAINERAPP"
@@ -124,7 +137,7 @@ pipeline {
             }
         }
 
-        stage('Print endpoint') {
+        stage('[CD] Print endpoint') {
             steps {
                 sh '''
                   echo ">>> Endpoint expuesto:"
